@@ -1,0 +1,21 @@
+<html>
+<head>
+    <script>
+        function call()
+        {
+            popup = window.open('http://pi.persistent.co.in');         
+            setInterval(function() {wait();},4000);
+        }   
+        function caller()
+        {
+            setInterval(function() {call();},4500);
+        }
+        function wait()
+        {
+            popup.close();
+        }
+    </script>
+</head>
+<body onload="caller();">
+</body>
+</html> 

@@ -1,0 +1,165 @@
+import java.io.IOException;  
+import java.io.PrintWriter;  
+import java.util.Enumeration;  
+import javax.servlet.RequestDispatcher;  
+import javax.servlet.ServletContext;  
+import javax.servlet.ServletException;  
+import javax.servlet.http.HttpServlet;  
+import javax.servlet.http.HttpServletRequest;  
+import javax.servlet.http.HttpServletResponse;  
+import javax.servlet.http.HttpSession;  
+  
+//@WebServlet(name="HelloWorldServlet", urlPatterns={"/HelloWorldServlet"})  
+public class HelloWorldServlet extends HttpServlet {  
+    
+    public void service(HttpServletRequest request, HttpServletResponse response)  
+    throws ServletException, IOException {  
+        response.setContentType("text/html;charset=UTF-8");  
+        PrintWriter out = response.getWriter();  
+        HttpSession sessionCart = request.getSession(true);  
+        try {  
+            if (request.getParameter("btnBill") != null) {  
+                Enumeration productNames = sessionCart.getAttributeNames();  
+                if (productNames.hasMoreElements()){  
+                    ServletContext context = getServletContext();  
+                    RequestDispatcher rd = context.getRequestDispatcher("/GenerateBillServlet");  
+                    rd.include(request, response);  
+                }  
+                else {  
+                    out.println("<font color='blue'><b>Basket seems to be empty. </b>Please select some item(s) and add them to the basket before generating the bill</font>");  
+                }  
+            }  
+  
+            if (request.getParameter("btnRmvBook") != null) {  
+                String books[] = request.getParameterValues("chkBook");  
+                if (books != null) {  
+                    for (int i=0; i<books.length; i++) {  
+                        sessionCart.removeAttribute(books[i]);  
+                    }  
+                    response.sendRedirect("HelloWorldServlet");  
+                }  
+            }  
+  
+            if (request.getParameter("btnAddBook") != null) {  
+                String books[] = request.getParameterValues("chkBook");  
+                String costs[] = request.getParameterValues("txtBook");  
+                String qty[] = request.getParameterValues("txtQty");  
+                String total;  
+                if (books != null) {  
+                    for (int i=0; i<books.length; i++) {  
+                        total = Float.toString(Float.valueOf(costs[i]) * Float.valueOf(qty[i]));  
+                        sessionCart.setAttribute(books[i], total);  
+                    }  
+                }  
+            }  
+            out.println("<html><head><title>Books Shopping Cart</title>");  
+            out.println("<script language='JavaScript'>");  
+            out.println("function swap() {");  
+            out.println("for(var i=0, n=document.frmBooks.chkBook.length;i<n;i++) {");  
+            out.println("checked = document.frmBooks.chkBook[i].checked;");  
+            out.println("if(checked==false) {");  
+            out.println("document.frmBooks.txtBook[i].disabled=true;");  
+            out.println("document.frmBooks.txtQty[i].disabled = true;");  
+            out.println("} else {");  
+            out.println("document.frmBooks.txtBook[i].disabled=false;");  
+            out.println("document.frmBooks.txtQty[i].disabled = false;");  
+            out.println("}");  
+            out.println("}");  
+            out.println("}");  
+            out.println("</script></head><body bgcolor='pink'><h1>Books For Sale</h1>");  
+            out.println("<form name='frmBooks' method='post' action='HelloWorldServlet'>");  
+            out.println("<table bgcolor='pink' width='100%' align='center' cellpadding='1' cellspacing='1'>");  
+            out.println("<tr bgcolor='pink'><td width='70%'>");  
+            out.println("<table bgcolor='pink' width='400' align='center' cellpadding='1' cellspacing='1' bordercolor='maroon' border='1'>");  
+            out.println("<tr bgcolor='maroon'>");  
+            out.println("<th align='left' colspan='2' width='340'><b>");  
+            out.println("<font color='white'>Book Titles</font></b></th>");  
+            out.println("<th width='60'><b>");  
+            out.println("<font color='white'>Price</font></b></th>");  
+            out.println("<th width='60'><b>");  
+            out.println("<font color='white'>Qty</font></b></th>");  
+            out.println("</tr>");  
+            out.println("<tr>");  
+            out.println("<td>");  
+            out.println("<input type='checkbox' name='chkBook' onClick='swap();' value='Struts 2.0 For Beginners'></td>");  
+            out.println("<td width='340'>Struts 2.0 For Beginners</td>");  
+            out.println("<td width='60'><input type='text' name='txtBook' value='450' disabled></td></td>");  
+            out.println("<td width='60'><input type='text' name='txtQty' value='1' disabled></td></td>");  
+            out.println("</tr>");  
+            out.println("<tr>");  
+            out.println("<td>");  
+            out.println("<input type='checkbox' name='chkBook' onClick='swap();' value='Oracle For Professionals'></td>");  
+            out.println("<td width='340'>Oracle For Professionals</td>");  
+            out.println("<td width='60'><input type='text' name='txtBook' value='750' disabled></td></td>");  
+            out.println("<td width='60'><input type='text' name='txtQty' value='1' disabled></td></td>");  
+            out.println("</tr>");  
+            out.println("<tr>");  
+            out.println("<td>");  
+            out.println("<input type='checkbox' name='chkBook' onClick='swap();' value='Java EE Project Using EJB 3.0, JPA and Struts For Beginners'></td>");  
+            out.println("<td width='340'>Java EE Project Using EJB 3.0, JPA and Struts For Beginners</td>");  
+            out.println("<td width='60'><input type='text' name='txtBook' value='600' disabled></td></td>");  
+            out.println("<td width='60'><input type='text' name='txtQty' value='1' disabled></td></td>");  
+            out.println("</tr>");  
+            out.println("<tr>");  
+            out.println("<td>");  
+            out.println("<input type='checkbox' name='chkBook' onClick='swap();' value='Hibernate 3 For Beginners'></td>");  
+            out.println("<td width='340' height='24'>Hibernate 3 For Beginners</td>");  
+            out.println("<td width='60'><input type='text' name='txtBook' value='350' disabled></td></td>");  
+            out.println("<td width='60'><input type='text' name='txtQty' value='1' disabled></td></td>");  
+            out.println("</tr>");  
+            out.println("<tr><td colspan='4'>");  
+            out.println("<table bgcolor='pink' align='center'>");  
+            out.println("</tr>");  
+            out.println("<td colspan='2' align='right'>");  
+            out.println("<input type='submit' value='Add To My Basket' name='btnAddBook'>");  
+            out.println("</td>");  
+            out.println("<td colspan='2' align='right'>");  
+            out.println("<input type='submit' value='Remove From My Basket' name='btnRmvBook'></td>");  
+            out.println("</td>");  
+            out.println("<td colspan='2' align='right'>");  
+            out.println("<input name='btnBill' type='submit' id='btnBill' value='Generate Bill'>");  
+            out.println("</td>");  
+            out.println("</tr></table>");  
+            out.println("</td></tr>");  
+            out.println("</table>");  
+            out.println("</td>");  
+            out.println("<td>");  
+            out.println("<table border='1' align='right' bordercolor='blue' width='350' height='250'>");  
+            out.println("<tr>");  
+            out.println("<td align='center' bgcolor='lightblue' colspan='2' height='20'>Basket</td>");  
+            out.println("</tr>");  
+            out.println("<tr>");  
+            out.println("<td align='center' bgcolor='lightblue' height='20'>Book</td>");  
+            out.println("<td align='center' bgcolor='lightblue' height='20'>Price</td>");  
+            out.println("</tr>");  
+            String productName = null;  
+            float totalCost = 0;  
+            float price = 0;  
+            Enumeration productNames = sessionCart.getAttributeNames();  
+            for (int i=0; productNames.hasMoreElements();i++) {  
+                productName = (String)productNames.nextElement();  
+                price = Float.valueOf((String) sessionCart.getAttribute(productName));  
+                out.println("<tr>");  
+                out.println("<td align='left' bgcolor='lightblue'>");  
+                out.println(productName);  
+                out.println("</td>");  
+                out.println("<td align='left' bgcolor='lightblue'>");  
+                out.println(price);  
+                out.println("</td>");  
+                out.println("</tr>");  
+                totalCost += price;  
+            }  
+            out.println("<tr>");  
+            out.println("<td align='center' bgcolor='lightblue' height='20'>Total: </td>");  
+            out.println("<td align='center' bgcolor='lightblue' height='20'>" + totalCost + "</td>");  
+            out.println("</tr>");  
+            out.println("</table>");  
+            out.println("</td></tr>");  
+            out.println("</table>");  
+            out.println("</form>");  
+            out.println("</body></html>");  
+        } finally {   
+            out.close();  
+        }  
+    }   
+}  
